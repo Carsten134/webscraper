@@ -1,0 +1,13 @@
+{
+  "user": {
+    "name": "HZimmer203",
+    "mail": "dmueller203@holio.day",
+    "password": "gartenZaun123"
+  },
+  "searchTerms": [
+    "Energiewende"
+  ],
+  "scrollsPerSearch": 10,
+  "scrollsOffset": 500,
+  "secBetweenScrolls": 0.5
+}
