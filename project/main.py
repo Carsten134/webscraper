@@ -1,5 +1,10 @@
 import sys
 import pandas as pd
+"""
+This file is the entrypoint for a new docker container
+and therefore the highest level of abstraction for this programm.
+"""
+
 
 def main(mode:str) -> None:
   if mode == "Spiegel":
