@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.common.exceptions import TimeoutException
 
 import uuid
 import time
@@ -62,7 +62,7 @@ class XScraper:
     """
     self.login()
 
-    for search_term in self.run_config["searchTerms"]:
+    for search_term in self._resolve_search_terms(self.run_config["searchTerms"]):
         time.sleep(1)
         self.search(search_term)
         self.scroll(self.run_config["scrollsPerSearch"],
@@ -99,9 +99,29 @@ class XScraper:
     download_button.click()
   
   def scroll(self, times, offset = 300, sleep = 1):
-    # wait until posts are loaded
-    WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'article')))
+    try:
+      # wait until posts are loaded
+      WebDriverWait(self.driver, 10)\
+          .until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'article')))
+      for _ in range(times):
+        time.sleep(sleep)
+        ActionChains(self.driver).scroll_by_amount(0, offset).perform()
+    except TimeoutException:
+      # if no posts are loaded, do nothing since there is nothing to scroll
+      return None
+    
+    
 
-    for _ in range(times):
-      time.sleep(sleep)
-      ActionChains(self.driver).scroll_by_amount(0, offset).perform()
+  def _resolve_search_terms(self, search_terms):
+    if type(search_terms) == list and len(search_terms) > 0:
+      if type(search_terms[0]) == list:
+        # do cartesian product of the lists provided
+        temp = []
+        for first in search_terms[0]:
+          for second in search_terms[1]:
+            temp.append(first + second)
+        return temp
+      # if just list of search terms was given return it
+      return search_terms
+        
+    raise RuntimeError("No searchterms provided in run config")

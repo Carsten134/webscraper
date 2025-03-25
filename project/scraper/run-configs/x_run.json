@@ -5,7 +5,10 @@
     "password": "gartenZaun123"
   },
   "searchTerms": [
-    "Energiewende"
+    ["klima", "wärme", "energie", "heiz"],
+    ["wende", "gesetzt", "politik", "habeck", "hammer", "sozial", "gerecht", "fair",
+    "bezahlbar", "elite", "maßnahme", "teuer", "mieter", "kosten", "unbezahlbar",
+    "exorbitant", "preis", "eigenheim", "haus"]
   ],
   "scrollsPerSearch": 10,
   "scrollsOffset": 500,
