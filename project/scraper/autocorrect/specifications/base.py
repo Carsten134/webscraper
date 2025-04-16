@@ -35,7 +35,7 @@ class AndSpecification(CompositeSpecification):
 
 class OrSpecification(CompositeSpecification):
   def __init__(self, conditions: list):
-    self.condtions = conditions
+    self.conditions = conditions
   
   def validate(self) -> bool:
     return any([condition.is_satisfied() for condition in self.conditions])
