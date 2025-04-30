@@ -11,9 +11,10 @@ import uuid
 import time
 import json
 import os
+import itertools
 
-from config import ZEESCHUIMER_ID
-from autocorrect.x import search_autocorrect
+from scraper.config import ZEESCHUIMER_ID
+from scraper.autocorrect.x import search_autocorrect
 
 class XScraper:
   def __init__(self, run_config:dict):
@@ -30,7 +31,7 @@ class XScraper:
     self.mail = run_config["user"]["name"]
     self.password = run_config["user"]["password"]
 
-    self.search_queue = self._resolve_search_terms(run_config["searchTerms"], run_config["additionalQuery"])
+    self.search_queue = self._resolve_searches(run_config["searchTerms"], run_config["timeBins"], run_config["additionalQuery"])
     self.run_config = run_config
     
     # stuff for activating zeeschuimer
@@ -50,7 +51,7 @@ class XScraper:
 
     # instantiating firefox and navigating to zeeschuimer
     self.driver = webdriver.Firefox(options=options)
-    self.driver.install_addon("./extensions/zeeschuimer-v1.12.3.zip", temporary=True)
+    self.driver.install_addon("./project/scraper/extensions/zeeschuimer-v1.12.3.zip", temporary=True)
     self.driver.get(self.zeeschuimer_url)
 
     # toggle X
@@ -108,19 +109,32 @@ class XScraper:
       ActionChains(self.driver).scroll_by_amount(0, offset).perform()
     time.sleep(sleep_after)
 
-  def _resolve_search_terms(self, search_terms, add_query = ""):
-    if type(search_terms) == list and len(search_terms) > 0:
-      if type(search_terms[0]) == list:
+  def _resolve_keywords(self, keywords:list[str]):
+    if type(keywords) == list and len(keywords) > 0:
+      if type(keywords[0]) == list:
         # do cartesian product of the lists provided
         temp = []
-        for first in search_terms[0]:
-          for second in search_terms[1]:
-            if not add_query:
-              temp.append(" AND ".join([first, second]))
-            else:
-              temp.append(f"({" AND ".join([first, second])}) {add_query}")
+        for first in keywords[0]:
+          for second in keywords[1]:
+            temp.append(" AND ".join([first, second]))
         return temp
       # if just list of search terms was given return it
-      return search_terms
+      return keywords
         
     raise RuntimeError("No searchterms provided in run config")
+  
+  def _resolve_timebins(self, time_bins:list[str]) -> list[str]:
+    result = []
+    for i in range(1,len(time_bins)):
+      result.append(f"since:{time_bins[i-1]} until:{time_bins[i]}")
+    return result
+  
+  def _resolve_searches(self, keywords:list[str], time_bins:list[str], additional_query:str) -> list[str]:
+    """
+    Builds queries from keywords, times and additional parameters.
+    """
+    keys = self._resolve_keywords(keywords)
+    times = self._resolve_timebins(time_bins)
+    
+    searches = [f"{' '.join(words)} {additional_query}" for words in list(itertools.product(keys, times))]
+    return searches
