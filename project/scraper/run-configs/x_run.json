@@ -10,6 +10,14 @@
     "bezahlbar", "elite", "maßnahme", "teuer", "mieter", "kosten", "unbezahlbar",
     "exorbitant", "preis", "eigenheim", "haus"]
   ],
+  "timeBins": [
+    "2020-01-01",
+    "2021-01-01",
+    "2022-01-01",
+    "2023-01-01",
+    "2024-01-01",
+    "2025-01-01"
+  ],
   "additionalQuery": "lang:de AND -is:quote",
   "scrollsPerSearch": 30,
   "scrollsOffset": 500,
