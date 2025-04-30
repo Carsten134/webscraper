@@ -5,8 +5,8 @@ from functools import wraps
 from selenium.webdriver import Firefox
 import time
 
-from autocorrect.specifications.base import AndSpecification, OrSpecification
-from autocorrect.specifications import x as XSpec
+from scraper.autocorrect.specifications.base import AndSpecification, OrSpecification
+from scraper.autocorrect.specifications import x as XSpec
 
 
 def search_autocorrect(search):
@@ -32,8 +32,7 @@ def search_autocorrect(search):
                 # for now just print a simple warning in this case
                 print(f"WARNING: search {text} found no results")
 
-            something_went_wrong = XSpec.SomethingWentWrong(
-                self.driver).is_satisfied()
+            something_went_wrong = XSpec.SomethingWentWrong(self.driver).is_satisfied()
             if something_went_wrong:
                 feedback = fallback429(self.driver,
                                        self.run_config["fallbacks"]["429"]["secWaiting"],
@@ -61,7 +60,7 @@ def fallback429(driver: Firefox, waiting_time: float, tries: float):
 
         posts = XSpec.PostsVisible(driver).is_satisfied()
         if posts:
-            break
+            return "fixed"
 
         if not posts and XSpec.NoSearchResultsExist(driver).is_satisfied():
             return "not found"
