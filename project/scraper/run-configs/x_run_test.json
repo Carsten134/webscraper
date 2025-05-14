@@ -1,0 +1,25 @@
+{
+  "user": {
+    "name": "HZimmer203",
+    "mail": "dmueller203@holio.day",
+    "password": "gartenZaun123"
+  },
+  "searchTerms": [
+    "Birthday"
+  ],
+  "timeBins": [
+    "2020-01-01",
+    "2021-01-01"
+  ],
+  "additionalQuery": "lang:de AND -is:quote",
+  "scrollsPerSearch": 3,
+  "scrollsOffset": 500,
+  "secBetweenScrolls": 1,
+  "secAfterScrolls": 5,
+  "fallbacks": {
+    "429": {
+      "secWaiting": 30,
+      "tries": 2
+    }
+  }
+}
