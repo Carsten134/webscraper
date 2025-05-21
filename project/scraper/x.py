@@ -5,12 +5,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.firefox.service import Service
 
 
 import uuid
 import time
 import json
 import os
+from sys import platform
 import itertools
 from datetime import datetime
 
@@ -52,7 +54,11 @@ class XScraper:
 
 
     # instantiating firefox and navigating to zeeschuimer
-    self.driver = webdriver.Firefox(options=options)
+    if platform == "linux" or platform == "linux2":
+      self.driver = webdriver.Firefox(options=options,
+                                      service=Service("./scraper/driver/geckodriver-v0.36.0-linux64.tar.gz"))
+    else:
+      self.driver = webdriver.Firefox(options=options)
     self.driver.install_addon("./scraper/extensions/zeeschuimer-v1.12.3.zip", temporary=True)
     self.driver.get(self.zeeschuimer_url)
 
