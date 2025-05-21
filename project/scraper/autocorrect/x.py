@@ -30,7 +30,7 @@ def search_autocorrect(search):
             not_found = XSpec.NoSearchResultsExist(self.driver).is_satisfied()
             if not_found:
                 # for now just print a simple warning in this case
-                print(f"WARNING: search {text} found no results")
+                self._log(f"WARNING: Search {text} found no results")
 
             something_went_wrong = XSpec.SomethingWentWrong(self.driver).is_satisfied()
             if something_went_wrong:
@@ -39,11 +39,11 @@ def search_autocorrect(search):
                                        self.run_config["fallbacks"]["429"]["tries"])
 
                 if feedback == "not found":
-                    print(f"WARNING: search {text} found no results")
+                    self._log(f"WARNING: Search {text} found no results")
 
                 elif feedback == "not fixed":
                     raise RuntimeError(
-                        f"Something went wrong on search {text}, check the browser for more info.")
+                        f"Something went wrong on search {text}, check the browser and logfile {self.log_path} for more info.")
 
     return wrapped_search
 

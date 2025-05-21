@@ -12,8 +12,9 @@ import time
 import json
 import os
 import itertools
+from datetime import datetime
 
-from scraper.config import ZEESCHUIMER_ID
+from scraper.config import ZEESCHUIMER_ID, X_LOG_DIR
 from scraper.autocorrect.x import search_autocorrect
 
 class XScraper:
@@ -30,6 +31,7 @@ class XScraper:
     self.username = run_config["user"]["name"]
     self.mail = run_config["user"]["name"]
     self.password = run_config["user"]["password"]
+    self.log_path = X_LOG_DIR + run_config["log"]["fileName"] + ".txt"
 
     self.search_queue = self._resolve_searches(run_config["searchTerms"], run_config["timeBins"], run_config["additionalQuery"])
     self.run_config = run_config
@@ -51,7 +53,7 @@ class XScraper:
 
     # instantiating firefox and navigating to zeeschuimer
     self.driver = webdriver.Firefox(options=options)
-    self.driver.install_addon("./project/scraper/extensions/zeeschuimer-v1.12.3.zip", temporary=True)
+    self.driver.install_addon("./scraper/extensions/zeeschuimer-v1.12.3.zip", temporary=True)
     self.driver.get(self.zeeschuimer_url)
 
     # toggle X
@@ -90,6 +92,8 @@ class XScraper:
     password.send_keys(Keys.ENTER)
     time.sleep(3)
 
+    self._log(f"Finished login to account: {self.username}")
+
   @search_autocorrect
   def search(self, text):
     search = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[placeholder="Search"]')))
@@ -97,6 +101,7 @@ class XScraper:
     # make sure the search field is empty then do request
     search.clear()
     search.send_keys(text + Keys.ENTER)
+    self._log(f"Searched for {text}")
 
   def download_posts(self):
     self.driver.get(self.zeeschuimer_url)
@@ -138,3 +143,11 @@ class XScraper:
     
     searches = [f"{' '.join(words)} {additional_query}" for words in list(itertools.product(keys, times))]
     return searches
+  
+  def _log(self, message):
+    """
+    Write log message to specified log file.
+    """
+    log_message = f"[{datetime.now().__str__()}]: {message}"
+    with open(self.log_path, "a") as f:
+      f.write(log_message + "\n")

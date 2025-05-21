@@ -21,5 +21,8 @@
       "secWaiting": 30,
       "tries": 2
     }
+  },
+  "log": {
+    "fileName": "test_log"
   }
 }
